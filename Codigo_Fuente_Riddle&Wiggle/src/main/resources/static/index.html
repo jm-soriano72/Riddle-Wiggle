@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Puzles Riddle & Wiggle</title>
+    <script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
+    <link rel="icon" type="image/x-icon" href="/Assets/cajonera.png">
+    <script type="module" src="Main.js"></script>
+    <script type="module" src="Menu.js"></script>
+    <script src="Server.js"></script>
+    <script type="module" src="Game.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+            display: flex;
+            height: 100.5vh;
+            background-image: url('assets/bg_game.png');
+            background-position: center;
+            background-size: cover;
+            justify-content: flex-start; /* Alinea el contenido a la izquierda */
+            align-items: center; /* Centra el contenido verticalmente */
+        }
+
+        canvas {
+            width: 67vw;
+            height: 99vh;
+            border: 5px solid rgb(126, 96, 0);
+            background-color: black; /* Fondo negro para el canvas */
+        }
+
+        #game-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 49.5%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 100%;
+            background-color: rgb(126, 96, 0); /* Color de la línea divisoria */
+            visibility: hidden; /* Inicialmente oculto */
+        }
+
+        #game-container.mostrar-linea::before {
+            visibility: visible; /* Mostrar cuando se agrega la clase */
+        }
+
+        #chat-container {
+            width: 15vw;
+            height: 99.5vh;
+            background-color: rgb(73, 56, 1);
+            color:  rgb(138, 115, 40);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 5px solid rgb(126, 96, 0);
+            visibility: hidden;
+        }
+
+        #mensajeChat {
+            flex-grow: 1;
+            padding: 10px;
+            overflow-y: auto;
+        }
+
+        #formaMensaje {
+            display: flex;
+        }
+
+        #mensaje {
+            flex-grow: 1;
+            padding: 10px;
+            outline: none;
+            background-color: rgb(94, 76, 19);
+            border: 2px solid rgb(73, 56, 1);
+            color: rgb(197, 193, 173);
+        }
+
+        #mensaje::placeholder{
+            color: rgb(197, 193, 173);
+        }
+
+        #enviar {
+            padding: 10px;
+            border: 2px solid rgb(73, 56, 1);
+            background-color: rgb(90, 70, 6);
+            color: rgb(197, 193, 173);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="chat-container">
+        <div id="mensajeChat"></div>
+        <form id="formaMensaje">
+            <input type="text" id="mensaje" placeholder="Escribe tu mensaje...">
+            <button type="submit" id="enviar">Enviar</button>
+        </form>
+    </div>
+
+    <div id="game-container">
+        <!-- El canvas del juego estará aquí -->
+    </div>
+
+    <script type="module">
+        import {devolverWS} from "./Game.js";
+        import {devolverJugador} from "./Game.js";
+
+        $(document).ready(function() {
+            $('#formaMensaje').submit(function(event) {
+                event.preventDefault();
+                var mensaje = $('#mensaje').val();
+                if (mensaje) {
+                    var mensajeObjeto = {
+                        tipo: "Mensaje",
+                        contenido: mensaje
+                    };
+                    var jugadorAsignado = devolverJugador();
+                    var conexionWS = devolverWS();
+                    if(jugadorAsignado == "R") {
+                        $('#mensajeChat').append('<p><span style="color: #abdbe3;">RIDDLE:</span> <span style="color: white;">' + mensaje + '</span></p>');
+                    } else {
+                        $('#mensajeChat').append('<p><span style="color: #ccabe3;">WIGGLE:</span> <span style="color: white;">' + mensaje + '</span></p>');
+                    }
+                    conexionWS.send(JSON.stringify(mensajeObjeto));
+                    $('#mensaje').val('');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
